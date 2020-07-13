@@ -8,6 +8,9 @@ node_modules
 # Rider
 .idea
 
+src/Taiga.Api/appsettings.json
+src/Taiga.Infrastructure/appsettings.json
+
 # User-specific files
 *.suo
 *.user
