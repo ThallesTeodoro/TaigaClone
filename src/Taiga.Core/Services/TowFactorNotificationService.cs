@@ -7,11 +7,11 @@ using Taiga.Core.Interfaces.ServicesInterfaces;
 
 namespace Taiga.Core.Services
 {
-    public class ConfirmationCodeNotificationService : IConfirmationCodeNotificationService
+    public class TowFactorNotificationService : ITowFactorNotificationService
     {
         private readonly EmailConfiguration configuration;
 
-        public ConfirmationCodeNotificationService()
+        public TowFactorNotificationService()
         {
             configuration = new EmailConfiguration();
         }
@@ -24,7 +24,7 @@ namespace Taiga.Core.Services
             message.Subject = "Taiga - Email Confirmation";
 
             string emailBody = string.Empty;
-            using (StreamReader reader = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), "Features/Register/EmailConfirm.cshtml")))
+            using (StreamReader reader = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), "Features/Login/EmailTowFactor.cshtml")))
             {
                 emailBody = reader.ReadToEnd();
             }

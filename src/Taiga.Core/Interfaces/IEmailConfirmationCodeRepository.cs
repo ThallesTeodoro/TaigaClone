@@ -4,6 +4,6 @@ namespace Taiga.Core.Interfaces
 {
     public interface IEmailConfirmationCodeRepository : IRepository<EmailConfirmationCode>
     {
-        EmailConfirmationCode FindUniqueByEmail(string email);
+        EmailConfirmationCode FindUniqueByEmail(string email, CodeType type);
     }
 }

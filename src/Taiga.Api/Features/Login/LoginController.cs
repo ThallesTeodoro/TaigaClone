@@ -56,27 +56,25 @@ namespace Taiga.Api.Features.Login
                         Environment.GetEnvironmentVariable("AUTH_SALT"),
                         user.Password) == false)
                     {
+                        ModelState.AddModelError("Email", "Invalid Credentials.");
                         response.StatusCode = 422;
-                        response.Message = "Uprocessable Entity.";
-                        response.Errors = new Dictionary<string, string>
-                        {
-                            {"Email", "Invalid Credentials."}
-                        };
+                        response.Message = "Unprocessable Entity.";
+                        response.Errors = Validations.FormatViewModelErrors(ModelState);
                     }
                     else
                     {
-                        string secret = _configuration.GetSection("JwtConfig").GetSection("Secret").Value;
-                        string expDate = _configuration.GetSection("JwtConfig").GetSection("ExpirationTime").Value;
-                        var token = _usow.JwtService.GenerateToken(user, secret, expDate);
-
-                        response.Message = "Authenticated";
-                        response.Data = new
+                        if (user.EmailConfirmed != true)
                         {
-                            Id = user.Id,
-                            Email = user.Email,
-                            UserName = user.UserName,
-                            Token = token
-                        };
+                            ModelState.AddModelError("Email", "Unverified Email.");
+                            response.StatusCode = 401;
+                            response.Message = "Unauthorized.";
+                            response.Errors = Validations.FormatViewModelErrors(ModelState);
+                        }
+                        else
+                        {
+                            SendEmailNotification(user);
+                            response.Message = "Ok";
+                        }
                     }
                 }
             }
@@ -89,6 +87,126 @@ namespace Taiga.Api.Features.Login
 
             HttpContext.Response.StatusCode = response.StatusCode;
             return Json(response);
+        }
+
+        [HttpPost]
+        [Route("confirm")]
+        public IActionResult Confirm([FromBody]ConfirmCodeViewModel model)
+        {
+            JsonResponse response = new JsonResponse(200);
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    EmailConfirmationCode emailConfirmation = _uow.EmailConfirmationCodeRepository.FindUniqueByEmail(model.Email,
+                                                                                                                     CodeType.Register);
+
+                    if (emailConfirmation == null)
+                    {
+                        ModelState.AddModelError("Email", "Email not found. Please, make sure you are registred.");
+                        response.StatusCode = 404;
+                        response.Message = "Email Not Found.";
+                        response.Errors = Validations.FormatViewModelErrors(ModelState);
+                    }
+                    else
+                    {
+                        User user = _uow.UserRepository.FindByEmail(model.Email);
+
+                        if (user != null)
+                        {
+                            ConfirmationCodeValidation confirmationCode = new ConfirmationCodeValidation(_uow,
+                                                                                                         _configuration);
+
+                            switch (confirmationCode.ValidateConfirmationCode(model.Email,
+                                                                              model.Code,
+                                                                              emailConfirmation.Code))
+                            {
+                                case 200:
+                                    user.EmailConfirmed = true;
+                                    _uow.UserRepository.Update(user);
+                                    _uow.EmailConfirmationCodeRepository.Remove(emailConfirmation.Id);
+                                    string secret = _configuration.GetSection("JwtConfig").GetSection("Secret").Value;
+                                    string expDate = _configuration.GetSection("JwtConfig").GetSection("ExpirationTime").Value;
+                                    var token = _usow.JwtService.GenerateToken(user, secret, expDate);
+                                    response.StatusCode = 200;
+                                    response.Message = "Successfully Registered.";
+                                    response.Message = "Ok";
+                                    response.Data = new
+                                    {
+                                        Id = user.Id,
+                                        Email = user.Email,
+                                        UserName = user.UserName,
+                                        Token = token
+                                    };
+                                    break;
+                                case 401:
+                                    response.StatusCode = 401;
+                                    response.Message = "Invalid Confirmation Code.";
+                                    break;
+                                case 410:
+                                    response.StatusCode = 410;
+                                    response.Message = "Expired Confirmation Code.";
+                                    break;
+                                case 429:
+                                    response.StatusCode = 429;
+                                    response.Message = "Attempt Limit.";
+                                    break;
+                                default:
+                                    response.StatusCode = 401;
+                                    response.Message = "Invalid Confirmation Code.";
+                                    break;
+                            }
+
+                            _uow.Commit();
+                        }
+                        else
+                        {
+                            response.StatusCode = 404;
+                            response.Message = "User not found. Please, try to register again.";
+                        }
+                    }
+                }
+                else
+                {
+                    response.StatusCode = 422;
+                    response.Message = "Unprocessable Entity.";
+                    response.Errors = Validations.FormatViewModelErrors(ModelState);
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("Login Confirm Error: ", exception);
+                response.StatusCode = 500;
+                response.Message = "Internal Server Error.";
+            }
+
+            HttpContext.Response.StatusCode = response.StatusCode;
+            return Json(response);
+        }
+
+        /// <summary>
+        /// Send confirmation email notification
+        /// </summary>
+        /// <param name="user"></param>
+        private void SendEmailNotification(User user)
+        {
+            EmailConfirmationCode emailCode = _uow.EmailConfirmationCodeRepository.FindUniqueByEmail(user.Email, CodeType.Login);
+
+            if (emailCode == null)
+            {
+                Random random = new Random();
+                emailCode = new EmailConfirmationCode
+                {
+                    Email = user.Email,
+                    Code = random.Next(10000, 99999),
+                    Type = CodeType.Login,
+                    CreatedAt = DateTime.Now
+                };
+                _uow.EmailConfirmationCodeRepository.Add(emailCode);
+            }
+
+            _usow.TowFactorNotificationService.SendNotification(user.UserName, user.Email, emailCode.Code);
         }
     }
 }

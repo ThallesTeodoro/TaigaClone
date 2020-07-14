@@ -9,9 +9,9 @@ namespace Taiga.Infrastructure.Repositories
     {
         public EmailConfirmationCodeRepository(TaigaContext context) : base(context){}
 
-        public EmailConfirmationCode FindUniqueByEmail(string email)
+        public EmailConfirmationCode FindUniqueByEmail(string email, CodeType type)
         {
-            return dbSet.Where(p => p.Email == email && p.Type == CodeType.Register)
+            return dbSet.Where(p => p.Email == email && p.Type == type)
                 .FirstOrDefault();
         }
     }

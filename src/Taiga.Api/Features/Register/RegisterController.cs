@@ -122,7 +122,8 @@ namespace Taiga.Api.Features.Register
             {
                 if (ModelState.IsValid)
                 {
-                    EmailConfirmationCode emailConfirmation = _uow.EmailConfirmationCodeRepository.FindUniqueByEmail(model.Email);
+                    EmailConfirmationCode emailConfirmation = _uow.EmailConfirmationCodeRepository.FindUniqueByEmail(model.Email,
+                                                                                                                     CodeType.Register);
 
                     if (emailConfirmation == null)
                     {
@@ -137,7 +138,12 @@ namespace Taiga.Api.Features.Register
 
                         if (user != null)
                         {
-                            switch (ValidateConfirmationCode(model, emailConfirmation.Code))
+                            ConfirmationCodeValidation confirmationCode = new ConfirmationCodeValidation(_uow,
+                                                                                                         _configuration);
+
+                            switch (confirmationCode.ValidateConfirmationCode(model.Email,
+                                                                              model.Code,
+                                                                              emailConfirmation.Code))
                             {
                                 case 200:
                                     response.StatusCode = 200;
@@ -200,7 +206,7 @@ namespace Taiga.Api.Features.Register
         /// <param name="user"></param>
         private void SendEmailNotification(User user)
         {
-            EmailConfirmationCode emailCode = _uow.EmailConfirmationCodeRepository.FindUniqueByEmail(user.Email);
+            EmailConfirmationCode emailCode = _uow.EmailConfirmationCodeRepository.FindUniqueByEmail(user.Email, CodeType.Register);
 
             if (emailCode == null)
             {
@@ -216,83 +222,6 @@ namespace Taiga.Api.Features.Register
             }
 
             _usow.ConfirmationCodeNotificationService.SendNotification(user.UserName, user.Email, emailCode.Code);
-        }
-
-        /// <summary>
-        /// Validate the confirmation code
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        private int ValidateConfirmationCode(ConfirmCodeViewModel model, int code)
-        {
-            int attempts = CheckAttempts(model.Email);
-            bool confirmed = false;
-            if (model.Code == code)
-            {
-                confirmed = true;
-            }
-
-            if (confirmed && (attempts == 410 || attempts == 429))
-            {
-                return attempts;
-            }
-            else if (!confirmed && (attempts == 410 || attempts == 429))
-            {
-                return attempts;
-            }
-            else if (!confirmed && attempts == 200)
-            {
-                return 401;
-            }
-
-            return 200;
-        }
-
-        /// <summary>
-        /// Check the confirmation email attempts quantity
-        /// </summary>
-        /// <param name="email"></param>
-        /// <returns></returns>
-        private int CheckAttempts(string email)
-        {
-            AttemptsQuantity attempts = _uow.AttemptsQuantityRepository.FindUniqueByEmailAndType(email, EndpointType.ConfirmEmail);
-
-            if (attempts == null)
-            {
-                attempts = new AttemptsQuantity
-                {
-                    Email = email,
-                    Quantity = 1,
-                    Type = EndpointType.ConfirmEmail,
-                    CreatedAt = DateTime.Now
-                };
-
-                _uow.AttemptsQuantityRepository.Add(attempts);
-                return 200;
-            }
-
-            int attemptsLimt = Int32.Parse(_configuration.GetSection("AttemptsLimit").Value.ToString());
-
-            TimeSpan diff = DateTime.Now - attempts.CreatedAt;
-            double diffHours = diff.TotalHours;
-
-            if (diffHours > 1)
-            {
-                _uow.AttemptsQuantityRepository.Remove(attempts.Id);
-                return 410;
-            }
-
-            if (attemptsLimt <= attempts.Quantity)
-            {
-                _uow.AttemptsQuantityRepository.Remove(attempts.Id);
-                return 429;
-            }
-
-            attempts.Quantity += 1;
-            _uow.AttemptsQuantityRepository.Update(attempts);
-
-            return 200;
         }
     }
 }
