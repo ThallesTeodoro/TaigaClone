@@ -1,0 +1,15 @@
+{
+  "rest-client.environmentVariables": {
+    "local": {
+        "version": "v1",
+        "host": "localhost",
+        "port": "5000",
+        "baseUrl": "http://localhost:5000",
+        "protocol": "http",
+        "server": "Kestrel",
+        "contentType": "application/json; charset=utf-8",
+        "transferEncoding": "chunked"
+    },
+    "production": {}
+  }
+}

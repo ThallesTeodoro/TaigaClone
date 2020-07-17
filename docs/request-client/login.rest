@@ -1,0 +1,25 @@
+@createdAt = {{$datetime iso8601}}
+
+### Login
+
+POST {{baseUrl}}/login HTTP/1.1
+User-Agent: rest-client
+Content-Type: {{contentType}}
+Date: {{createdAt}}
+Server: {{server}}
+Transfer-Encoding: {{transferEncoding}}
+
+{
+	"Email": "thallesmjteodoro@gmail.com",
+	"Password": "secret"
+}
+
+### Login Confirm
+
+POST {{baseUrl}}/login/confirm HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+	"Email": "thallesmjteodoro@gmail.com",
+	"Code": 68046
+}

@@ -1,0 +1,21 @@
+### Register
+
+POST {{baseUrl}}/register HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+	"Name": "Thalles",
+	"UserName": "thallesmj.teodoro",
+	"Email": "thallesmjteodoro@gmail.com",
+	"Password": "secret"
+}
+
+### Register Confirm
+
+POST {{baseUrl}}/register/confirm HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+	"Email": "thallesmjteodoro@gmail.com",
+	"Code": 34293
+}
