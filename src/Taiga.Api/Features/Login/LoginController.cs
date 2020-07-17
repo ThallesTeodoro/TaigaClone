@@ -49,7 +49,7 @@ namespace Taiga.Api.Features.Login
                 }
                 else
                 {
-                    User user = _uow.UserRepository.FindUniqueByEmailOrUserName(model.UserName);
+                    User user = _uow.UserRepository.FindByEmail(model.Email);
 
                     if (user == null || HashExtension.Validate(
                         model.Password,
@@ -73,6 +73,7 @@ namespace Taiga.Api.Features.Login
                         else
                         {
                             SendEmailNotification(user);
+                            _uow.Commit();
                             response.Message = "Ok";
                         }
                     }
@@ -83,6 +84,7 @@ namespace Taiga.Api.Features.Login
                 _logger.LogError("Login error: " + exception);
                 response.StatusCode = 500;
                 response.Message = "Internal Server Error.";
+                _uow.Rollback();
             }
 
             HttpContext.Response.StatusCode = response.StatusCode;
@@ -100,11 +102,11 @@ namespace Taiga.Api.Features.Login
                 if (ModelState.IsValid)
                 {
                     EmailConfirmationCode emailConfirmation = _uow.EmailConfirmationCodeRepository.FindUniqueByEmail(model.Email,
-                                                                                                                     CodeType.Register);
+                                                                                                                     CodeType.Login);
 
                     if (emailConfirmation == null)
                     {
-                        ModelState.AddModelError("Email", "Email not found. Please, make sure you are registred.");
+                        ModelState.AddModelError("Email", "Email not found. Please, make sure you are registered.");
                         response.StatusCode = 404;
                         response.Message = "Email Not Found.";
                         response.Errors = Validations.FormatViewModelErrors(ModelState);
