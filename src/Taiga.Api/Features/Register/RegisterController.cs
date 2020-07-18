@@ -130,7 +130,7 @@ namespace Taiga.Api.Features.Register
 
                     if (emailConfirmation == null)
                     {
-                        ModelState.AddModelError("Email", "Email not found. Please, make sure you are registred.");
+                        ModelState.AddModelError("Email", "Email not found. Please, make sure you are registered.");
                         response.StatusCode = 404;
                         response.Message = "Email Not Found.";
                         response.Errors = Validations.FormatViewModelErrors(ModelState);

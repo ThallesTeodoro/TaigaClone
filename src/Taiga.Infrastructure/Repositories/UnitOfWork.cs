@@ -10,6 +10,7 @@ namespace Taiga.Infrastructure.Repositories
         private IUserRepository _userRepository;
         private IEmailConfirmationCodeRepository _emailConfirmationCodeRepository;
         private IAttemptsQuantityRepository _attemptsQuantityRepository;
+        private IProjectRepository _projectRepository;
         private readonly TaigaContext _context;
 
         public UnitOfWork(TaigaContext context) { _context = context; }
@@ -29,6 +30,11 @@ namespace Taiga.Infrastructure.Repositories
         public IAttemptsQuantityRepository AttemptsQuantityRepository
         {
             get { return _attemptsQuantityRepository = _attemptsQuantityRepository ?? new AttemptsQuantityRepository(_context); }
+        }
+
+        public IProjectRepository ProjectRepository
+        {
+            get { return _projectRepository = _projectRepository ?? new ProjectRepository(_context); }
         }
     }
 }

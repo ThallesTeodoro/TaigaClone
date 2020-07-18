@@ -5,8 +5,8 @@ Content-Type: {{contentType}}
 
 {
 	"Name": "Thalles",
-	"UserName": "thallesmj.teodoro",
-	"Email": "thallesmjteodoro@gmail.com",
+	"UserName": "thalles.teodoro",
+	"Email": "thallesmjteodoro@outlook.com",
 	"Password": "secret"
 }
 
@@ -16,6 +16,6 @@ POST {{baseUrl}}/register/confirm HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-	"Email": "thallesmjteodoro@gmail.com",
-	"Code": 34293
+	"Email": "thallesmjteodoro@outlook.com",
+	"Code": 45402
 }

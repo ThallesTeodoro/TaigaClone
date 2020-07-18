@@ -5,6 +5,7 @@ namespace Taiga.Core.Interfaces
         IUserRepository UserRepository { get; }
         IEmailConfirmationCodeRepository EmailConfirmationCodeRepository { get; }
         IAttemptsQuantityRepository AttemptsQuantityRepository { get; }
+        IProjectRepository ProjectRepository { get; }
         void Commit();
         void Rollback();
     }

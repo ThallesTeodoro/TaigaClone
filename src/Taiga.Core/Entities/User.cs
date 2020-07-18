@@ -39,6 +39,9 @@ namespace Taiga.Core.Entities
         [DefaultValue(false)]
         public bool EmailConfirmed { get; set; }
 
+        [DefaultValue(false)]
+        public bool TowFactorAuthentication { get; set; }
+
         // relationships
         [ForeignKey("OwnerId")]
         public ICollection<Project> Projects { get; set; }

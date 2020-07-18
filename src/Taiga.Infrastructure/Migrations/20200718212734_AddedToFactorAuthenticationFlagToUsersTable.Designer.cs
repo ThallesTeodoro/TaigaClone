@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Taiga.Infrastructure.Data;
 
 namespace Taiga.Infrastructure.Migrations
 {
     [DbContext(typeof(TaigaContext))]
-    partial class TaigaContextModelSnapshot : ModelSnapshot
+    [Migration("20200718212734_AddedToFactorAuthenticationFlagToUsersTable")]
+    partial class AddedToFactorAuthenticationFlagToUsersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
