@@ -82,7 +82,7 @@ namespace Taiga.Api.Features.Register
 
                         if (model.Avatar != null)
                         {
-                            user.Avatar = FileMenagement.SaveFile(
+                            user.Avatar = FileManagement.SaveFile(
                                 model.Avatar,
                                 Path.Combine(_environment.WebRootPath, "img/users")).ToString();
                         }

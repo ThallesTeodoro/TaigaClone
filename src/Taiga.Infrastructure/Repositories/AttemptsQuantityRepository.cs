@@ -12,7 +12,7 @@ namespace Taiga.Infrastructure.Repositories
         public AttemptsQuantity FindUniqueByEmailAndType(string email, EndpointType type)
         {
             return dbSet.Where(p => p.Email == email && p.Type == type)
-                .FirstOrDefault();
+                        .FirstOrDefault();
         }
     }
 }

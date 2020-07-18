@@ -12,18 +12,19 @@ namespace Taiga.Infrastructure.Repositories
         public User FindUniqueByEmailOrUserName(string emailOrUserName)
         {
             return dbSet.Where(p => p.Email == emailOrUserName || p.UserName == emailOrUserName)
-                .FirstOrDefault();
+                        .FirstOrDefault();
         }
 
         public User FindByEmail(string email)
         {
             return dbSet.Where(p => p.Email == email)
-                .FirstOrDefault();
+                        .FirstOrDefault();
         }
 
         public int CountByUserName(string userName)
         {
-            return dbSet.Where(p => p.UserName == userName).Count();
+            return dbSet.Where(p => p.UserName == userName)
+                        .Count();
         }
     }
 }

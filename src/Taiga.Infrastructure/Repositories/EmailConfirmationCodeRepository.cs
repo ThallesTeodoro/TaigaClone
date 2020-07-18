@@ -12,7 +12,7 @@ namespace Taiga.Infrastructure.Repositories
         public EmailConfirmationCode FindUniqueByEmail(string email, CodeType type)
         {
             return dbSet.Where(p => p.Email == email && p.Type == type)
-                .FirstOrDefault();
+                        .FirstOrDefault();
         }
     }
 }

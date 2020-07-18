@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace Taiga.Api.Utilities
 {
-    public class FileMenagement
+    public class FileManagement
     {
         public static string GetUniqueFileName(string fileName)
         {
             fileName = Path.GetFileName(fileName);
             return Path.GetFileNameWithoutExtension(fileName)
                     + "_"
-                    + Guid.NewGuid().ToString().Substring(0,4)
+                    + DateTime.Now.ToString("yyyyMMddHHmm")
                     + Path.GetExtension(fileName);
         }
 
