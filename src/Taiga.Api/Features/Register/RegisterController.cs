@@ -80,7 +80,7 @@ namespace Taiga.Api.Features.Register
                             EmailConfirmed = false,
                         };
 
-                        if (user.Avatar != null)
+                        if (model.Avatar != null)
                         {
                             user.Avatar = FileMenagement.SaveFile(
                                 model.Avatar,
