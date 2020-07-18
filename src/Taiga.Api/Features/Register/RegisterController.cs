@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Taiga.Api.Extensions;
 using Taiga.Api.Utilities;
+using Taiga.Api.Features.Register.ViewModels;
 using Taiga.Core.Entities;
 using Taiga.Core.Interfaces;
 using Taiga.Core.Interfaces.ServicesInterfaces;

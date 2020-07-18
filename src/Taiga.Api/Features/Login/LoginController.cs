@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Taiga.Core.Entities;
 using Taiga.Api.Extensions;
+using Taiga.Api.Utilities;
+using Taiga.Api.Features.Login.ViewModels;
 using Taiga.Core.Interfaces;
 using Taiga.Core.Interfaces.ServicesInterfaces;
 using Microsoft.Extensions.Configuration;
-using Taiga.Core.Services;
-using Taiga.Api.Utilities;
 
 namespace Taiga.Api.Features.Login
 {

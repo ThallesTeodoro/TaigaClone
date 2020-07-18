@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Taiga.Api.Features.Login
+namespace Taiga.Api.Features.Login.ViewModels
 {
     public class ConfirmCodeViewModel
     {

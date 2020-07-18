@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace Taiga.Api.Features.Register
+namespace Taiga.Api.Features.Register.ViewModels
 {
     public class RegisterViewModel
     {
