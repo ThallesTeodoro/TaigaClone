@@ -8,11 +8,13 @@ using Taiga.Api.Features.Login.ViewModels;
 using Taiga.Core.Interfaces;
 using Taiga.Core.Interfaces.ServicesInterfaces;
 using Microsoft.Extensions.Configuration;
+using Taiga.Api.Filters;
 
 namespace Taiga.Api.Features.Login
 {
     [ApiController]
     [Route("login")]
+    [AnonymousOnlyFilter("Index", "Dashboard")]
     public class LoginController : Controller
     {
         private readonly ILogger _logger;

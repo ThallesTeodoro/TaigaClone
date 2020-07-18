@@ -10,11 +10,13 @@ using Taiga.Core.Entities;
 using Taiga.Core.Interfaces;
 using Taiga.Core.Interfaces.ServicesInterfaces;
 using Microsoft.Extensions.Configuration;
+using Taiga.Api.Filters;
 
 namespace Taiga.Api.Features.Register
 {
     [ApiController]
     [Route("register")]
+    [AnonymousOnlyFilter("Index", "Dashboard")]
     public class RegisterController : Controller
     {
         private readonly ILogger _logger;
