@@ -5,5 +5,6 @@ namespace Taiga.Core.Interfaces.ServicesInterfaces
         IConfirmationCodeNotificationService ConfirmationCodeNotificationService { get; }
         ITowFactorNotificationService TowFactorNotificationService { get; }
         IJwtService JwtService { get; }
+        ILoginNotificationService LoginNotificationService { get; }
     }
 }

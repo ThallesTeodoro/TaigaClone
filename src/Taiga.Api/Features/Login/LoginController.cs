@@ -73,9 +73,18 @@ namespace Taiga.Api.Features.Login
                         }
                         else
                         {
-                            SendEmailNotification(user);
-                            _uow.Commit();
-                            response.Message = "Ok";
+                            if (user.TowFactorAuthentication == false)
+                            {
+                                _usow.LoginNotificationService.SendNotification(user.UserName, user.Email);
+                                response.Message = "Successfully Authenticated";
+                                response.Data = GetAuthenticationToken(user);
+                            }
+                            else
+                            {
+                                SendEmailNotification(user);
+                                _uow.Commit();
+                                response.Message = "Ok";
+                            }
                         }
                     }
                 }
@@ -129,19 +138,9 @@ namespace Taiga.Api.Features.Login
                                     user.EmailConfirmed = true;
                                     _uow.UserRepository.Update(user);
                                     _uow.EmailConfirmationCodeRepository.Remove(emailConfirmation.Id);
-                                    string secret = _configuration.GetSection("JwtConfig").GetSection("Secret").Value;
-                                    string expDate = _configuration.GetSection("JwtConfig").GetSection("ExpirationTime").Value;
-                                    var token = _usow.JwtService.GenerateToken(user, secret, expDate);
                                     response.StatusCode = 200;
-                                    response.Message = "Successfully Registered.";
-                                    response.Message = "Ok";
-                                    response.Data = new
-                                    {
-                                        Id = user.Id,
-                                        Email = user.Email,
-                                        UserName = user.UserName,
-                                        Token = token
-                                    };
+                                    response.Message = "Successfully Authenticated.";
+                                    response.Data = GetAuthenticationToken(user);
                                     break;
                                 case 401:
                                     response.StatusCode = 401;
@@ -210,6 +209,25 @@ namespace Taiga.Api.Features.Login
             }
 
             _usow.TowFactorNotificationService.SendNotification(user.UserName, user.Email, emailCode.Code);
+        }
+
+        /// <summary>
+        /// Get authentication jwt token
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public object GetAuthenticationToken(User user)
+        {
+            string secret = _configuration.GetSection("JwtConfig").GetSection("Secret").Value;
+            string expDate = _configuration.GetSection("JwtConfig").GetSection("ExpirationTime").Value;
+            var token = _usow.JwtService.GenerateToken(user, secret, expDate);
+            return new
+            {
+                Id = user.Id,
+                Email = user.Email,
+                UserName = user.UserName,
+                Token = token
+            };
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Taiga.Core.Services
         private IConfirmationCodeNotificationService _configurationCode;
         private ITowFactorNotificationService _towFactorAuthentication;
         private IJwtService _jwtService;
+        private ILoginNotificationService _loginNotification;
 
         public IConfirmationCodeNotificationService ConfirmationCodeNotificationService
         {
@@ -21,6 +22,11 @@ namespace Taiga.Core.Services
         public IJwtService JwtService
         {
             get { return _jwtService = _jwtService ?? new JwtService(); }
+        }
+
+        public ILoginNotificationService LoginNotificationService
+        {
+            get { return _loginNotification = _loginNotification ?? new LoginNotificationService(); }
         }
     }
 }
